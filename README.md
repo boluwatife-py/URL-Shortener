@@ -1,6 +1,68 @@
-# FastAPI URL Shortener
+# Retry creating/updating README.md after environment reset
+This project is a FastAPI-based URL shortener with authentication, analytics, and a clean, versioned API structure. It is designed to be simple, async-first, and production-oriented while keeping analytics accurate and extensible.
 
-This is a FastAPI-based URL shortener service with analytics support, async PostgreSQL, and automatic API documentation via Swagger UI.
+---
+
+## High-Level Approach
+
+- The system exposes a versioned REST API (`/api/v1`) for authentication, link management, and analytics.
+- Shortened URLs are generated using hashed public IDs to avoid predictability.
+- All database operations are asynchronous using SQLAlchemy + asyncpg.
+- Analytics are collected at redirect time and aggregated later.
+- Authentication is handled using JWT access and refresh tokens.
+
+---
+
+## Assumptions
+
+- Analytics accuracy is prioritized over browser caching.
+- Redirects are the main trigger for analytics.
+- A visit is defined as each redirect request, not a unique user.
+- Users and links are exposed externally using hashed IDs, not database primary keys.
+
+---
+
+## Redirect Strategy and Status Codes
+
+- HTTP 302 (Temporary Redirect) is used by default to track all visits accurately.
+- HTTP 301 (Permanent Redirect) can be used for truly permanent links but may reduce analytics accuracy due to caching.
+
+The current design favors 302 redirects.
+
+---
+
+## Security Design
+
+### Password Handling
+- Passwords are hashed using bcrypt with per-password salts.
+- Plain-text passwords are never stored.
+
+### JWT Authentication
+- Stateless JWT-based authentication.
+- Access tokens are short-lived.
+- Refresh tokens are long-lived.
+
+### Token Validation
+- Expired or invalid tokens return 401 Unauthorized.
+
+---
+
+## Project Structure
+
+    api/
+      v1/
+        routes/
+    core/
+      config.py
+      database.py
+      security.py
+    models/
+    schemas/
+    services/
+    migrations/
+    main.py
+
+The structure separates routing, business logic, data models, and configuration. API versioning allows safe iteration.
 
 ---
 
@@ -10,25 +72,22 @@ This is a FastAPI-based URL shortener service with analytics support, async Post
 - PostgreSQL (async via asyncpg)
 - SQLAlchemy (Async)
 - Pydantic
-- JWT Authentication
-- Gemini API (optional, for AI-generated analytics insights)
+- JWT (python-jose)
+- bcrypt
+- Gemini API (optional)
 - Uvicorn
 
 ---
 
 ## Prerequisites
 
-Make sure you have the following installed:
-
-- Python 3.10 or higher
+- Python 3.10+
 - PostgreSQL
 - Git
 
 ---
 
 ## Project Setup
-
-Clone the repository:
 
     git clone https://github.com/boluwatife-py/URL-Shortener.git
     cd URL-Shortener
@@ -37,75 +96,48 @@ Clone the repository:
 
 ## Environment Variables
 
-Create a `.env` file in the root of the project and add the following values:
+Create a `.env` file:
 
     DATABASE_URL=postgresql+asyncpg://postgres:password@host:port/db_name
     JWT_SECRET=super-secret-key
     HOST_URL=http://localhost:8000
     GEMINI_API_KEY=your-gemini-api-key
 
-Notes:
-- Ensure the database `url_shortener` already exists.
-- Update database credentials if necessary.
-- `GEMINI_API_KEY` is optional unless AI analytics features are enabled.
-
 ---
 
-## Dependency Installation
+## Install Dependencies
 
-### Option 1: Using uv (recommended)
-
-Install uv if you do not already have it:
+### Using uv
 
     pip install uv
-
-Create and activate a virtual environment:
-
     uv venv
     source .venv/bin/activate
-
-Install dependencies:
-
     uv pip install -r requirements.txt
 
----
-
-### Option 2: Using pip
-
-Create and activate a virtual environment:
+### Using pip
 
     python -m venv .venv
     source .venv/bin/activate
-
-Install dependencies:
-
     pip install -r requirements.txt
 
 ---
 
-## Running the Application
-
-Start the FastAPI server using Uvicorn:
+## Run the Application
 
     uvicorn main:app --reload
 
 ---
 
-## API Documentation
+## API Docs
 
-Once the server is running, open your browser and visit:
+Visit:
 
     http://localhost:8000/docs
 
-This will open the Swagger UI where you can explore and test all available APIs.
-
 ---
 
-## Redirect Configuration (Important)
+## Trade-offs
 
-When redirecting shortened URLs:
-
-- Use HTTP 301 (Permanent Redirect) for links that are permanently redirected.
-- Use HTTP 302 (Temporary Redirect) when you want to collect accurate analytics such as click counts, referrers, or timestamps.
-
-Using 302 ensures that browsers and proxies do not aggressively cache redirects, which is important for analytics accuracy.
+- 302 redirects chosen for accurate analytics.
+- Hashed IDs improve security but add minor computation.
+- JWT provides stateless auth but requires expiration handling.
