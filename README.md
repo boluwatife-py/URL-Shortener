@@ -1,4 +1,3 @@
-# Retry creating/updating README.md after environment reset
 This project is a FastAPI-based URL shortener with authentication, analytics, and a clean, versioned API structure. It is designed to be simple, async-first, and production-oriented while keeping analytics accurate and extensible.
 
 ---
