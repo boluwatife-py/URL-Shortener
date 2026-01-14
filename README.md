@@ -9,6 +9,7 @@ This project is a FastAPI-based URL shortener with authentication, analytics, an
 - All database operations are asynchronous using SQLAlchemy + asyncpg.
 - Analytics are collected at redirect time and aggregated later.
 - Authentication is handled using JWT access and refresh tokens.
+- Analytics are made in the background. Enhancing User Experience by increasing speed
 
 ---
 
