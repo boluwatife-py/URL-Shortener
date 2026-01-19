@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, Body
 from sqlalchemy.ext.asyncio import AsyncSession
 from core.database import get_db
-from services.analytics_service import AnalyticsService
-from services.ai_insight_service import AIInsightService
-from services.auth_service import get_current_user
+from services.analytics import AnalyticsService
+from services.ai_insight import AIInsightService
+from services.auth import get_current_user
 from models.user import User
 from schemas.analytics import LinkAnalyticsResponse
 from schemas.ai_insight import AIPromptRequest

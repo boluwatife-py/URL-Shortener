@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from pydantic import HttpUrl
 from core.config import settings
 from schemas.link import LinkCreate, LinkResponse
-from services.link_service import LinkService, get_link_service
+from services.link import LinkService, get_link_service
 
 router = APIRouter(prefix="/links", tags=["links"])
 

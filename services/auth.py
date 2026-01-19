@@ -30,14 +30,14 @@ async def get_current_user(
     return user
 
 
-async def register_user(db: AsyncSession, email: str, password: str) -> User:
-    result = await db.execute(select(User).where(User.email == email))
+async def register_user(db: AsyncSession, username: str, password: str) -> User:
+    result = await db.execute(select(User).where(User.username == username))
     exists = result.scalar_one_or_none()
     if exists:
-        raise HTTPException(status_code=400, detail="Email already registered")
+        raise HTTPException(status_code=400, detail="username already registered")
 
     user = User(
-        email=email,
+        username=username,
         password_hash=hash_password(password)
     )
 
@@ -48,8 +48,8 @@ async def register_user(db: AsyncSession, email: str, password: str) -> User:
     return user
 
 
-async def authenticate_user(db: AsyncSession, email: str, password: str):
-    result = await db.execute(select(User).where(User.email == email))
+async def authenticate_user(db: AsyncSession, username: str, password: str):
+    result = await db.execute(select(User).where(User.username == username))
     user = result.scalar_one_or_none()
     
     if not user or not verify_password(password, user.password_hash):

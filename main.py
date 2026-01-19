@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request, BackgroundTasks, Depends
 from fastapi.responses import RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from core.database import get_db
-from services.link_redirect_service import LinkRedirectService
+from services.link_redirect import LinkRedirectService
 from api.v1 import router as v1_router
 from core.config import settings
 from fastapi.middleware.cors import CORSMiddleware
@@ -41,7 +41,7 @@ async def redirect_link(
     background_tasks: BackgroundTasks,
     db: AsyncSession = Depends(get_db)
 ):
-    
+
     background_tasks.add_task(
         record_click_background,
         public_id=public_id,
