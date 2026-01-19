@@ -17,11 +17,15 @@ Guidelines:
 - Suggest actionable improvements (timing, traffic sources, content strategy).
 - Do NOT fabricate data.
 - If analytics data is limited, clearly state the limitation.
+- If no analytics data is provided, explain that the links have not received activity yet.
+- Do NOT ask the user to provide analytics data.
+- Frame the response as a platform state, not a user mistake.
 - Avoid technical jargon unless necessary.
 - Do not mention internal implementation details.
 
 Focus on helping the user understand what is working, what is not, and what to do next.
 """
+
 
 class AIInsightService:
     async def generate_insights(
